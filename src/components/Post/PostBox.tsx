@@ -94,7 +94,7 @@ function PostBox() {
 
     // 초기 데이터를 불러오기 위해 useEffect를 사용
     axios
-      .get(`http://localhost:8000/post/${board}/${postNum}`)
+      .get(`http://localhost:8080/post/${board}/${postNum}`)
       .then((response) => {
         setPosts(response.data);
       })

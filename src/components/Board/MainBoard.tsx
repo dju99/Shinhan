@@ -36,7 +36,7 @@ function MainBoard(props: MainBoardProps) {
 
   useEffect(() => {
     axios
-      .get(`/post/${board}`)
+      .get(`http://localhost:8080/post/${board}`)
       .then((response) => {
         setPageNum(response.data.num);
         setPosts(response.data.posts.reverse());

@@ -106,7 +106,7 @@ function MySite() {
     const fetchData = async () => {
       if (userToken) {
         try {
-          const response = await fetch("http://localhost:8000/mypage", {
+          const response = await fetch("http://localhost:8080/mypage", {
             method: "POST",
             body: JSON.stringify({
               token: userToken,
@@ -149,8 +149,8 @@ function MySite() {
         },
       };
 
-      const response = await axios.post("http://localhost:8000/profileupload", formData, config);
-      const updatedImageUrl = `http://localhost:8000/${response.data.imageUrl.replace(/\\/g, "/")}`;
+      const response = await axios.post("http://localhost:8080/profileupload", formData, config);
+      const updatedImageUrl = `http://localhost:8080/${response.data.imageUrl.replace(/\\/g, "/")}`;
       console.log(updatedImageUrl);
       setImage(updatedImageUrl);
     } catch (error) {

@@ -9,11 +9,8 @@ const express = require("express");
 const app = express();
 const path = require("path");
 
-app.use(express.json());
-app.use(express.static("build"));
 const cors = require("cors");
 app.use(cors());
-
 app.use(express.static(path.join(__dirname, "./build")));
 
 app.listen(process.env.PORT || 8080, async function () {

@@ -16,7 +16,7 @@ function StoreInfo() {
   useEffect(() => {
     // 서버에서 데이터를 가져오는 요청
     axios
-      .get("https://shinhan-f707dfa8a998.herokuapp.com//store")
+      .get("http://localhost:8080/store")
       .then((response) => {
         setData(response.data); // 데이터를 React 상태(State)에 저장
       })
@@ -32,12 +32,16 @@ function StoreInfo() {
         <M.StoreinfoAddress>주소</M.StoreinfoAddress>
       </M.StoreinfoHead>
       <M.StoreinfoContent>
-        {data.map((store, index) => (
-          <M.StoreItem key={index}>
-            <M.Name onClick={() => navigate(`/store/${store.name}`)}>{store.name}</M.Name>
-            <M.Address onClick={() => navigate(`/store/${store.name}`)}>{store.address}</M.Address>
-          </M.StoreItem>
-        ))}
+        {data.length > 0 ? (
+          data.map((store, index) => (
+            <M.StoreItem key={index}>
+              <M.Name onClick={() => navigate(`/store/${store.name}`)}>{store.name}</M.Name>
+              <M.Address onClick={() => navigate(`/store/${store.name}`)}>{store.address}</M.Address>
+            </M.StoreItem>
+          ))
+        ) : (
+          <div>No data available</div>
+        )}
       </M.StoreinfoContent>
     </M.Storeinfo>
   );

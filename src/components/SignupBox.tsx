@@ -130,7 +130,7 @@ function SignupBox() {
 
   const onNameCheck = async () => {
     try {
-      const response = await axios.post("http://localhost:000/userNameCheck", {
+      const response = await axios.post("http://localhost:8080/userNameCheck", {
         name: watchName,
       });
 
@@ -157,7 +157,7 @@ function SignupBox() {
     if (isNameChecked) {
       // 중복확인이 완료된 경우에만 회원가입 진행
       try {
-        const response = await axios.post("http://localhost:8000/userSignup", {
+        const response = await axios.post("http://localhost:8080/userSignup", {
           id: userData.id,
           name: userData.name,
           pw: userData.pw,
