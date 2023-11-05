@@ -36,7 +36,7 @@ function MainBoard(props: MainBoardProps) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8000/post/${board}`)
+      .get(`http://shinhan-f707dfa8a998.herokuapp.com/post/${board}`)
       .then((response) => {
         setPageNum(response.data.num);
         setPosts(response.data.posts.reverse());
