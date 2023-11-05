@@ -63,7 +63,7 @@
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.3",
-    "@types/react-js-pagination": "^3.0.5",
+    "@types/react-js-pagination": "^3.0.6",
     "@types/react-slick": "^0.23.11",
     "@types/slick-carousel": "^1.6.39"
   }
