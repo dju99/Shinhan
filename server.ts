@@ -14,10 +14,9 @@ app.use(express.static("build"));
 const cors = require("cors");
 app.use(cors());
 
-// 정적 파일 서비스 설정
 app.use(express.static(path.join(__dirname, "./build")));
 
-app.listen(8000, async function () {
+app.listen(process.env.PORT || 8080, async function () {
   const client = await MongoClient.connect("mongodb+srv://dju99:yihwang70@cluster0.ljm5i.mongodb.net/");
   const dbName = "Project";
   db = client.db(dbName);
