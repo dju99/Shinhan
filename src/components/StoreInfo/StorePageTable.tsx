@@ -41,15 +41,19 @@ function StoreInfo() {
       <S.LikesBtn src={NonLikes} />
       <S.StoreAddress>{store?.address}</S.StoreAddress>
       <div style={{ margin: "0", display: "flex", alignItems: "center" }}>
+        <S.Icon src={Tag} />
+        <div style={{ fontSize: "30px", fontWeight: "bold" }}>{store?.type.join(", ")}</div>
+      </div>
+      <div style={{ margin: "0", display: "flex", alignItems: "center", marginTop: "25px" }}>
         <S.Icon src={Number} />
-        <h3>{store?.number}</h3>
+        <div style={{ fontSize: "20px" }}>{store?.number}</div>
       </div>
       <div style={{ margin: "0 0 30px 0", display: "flex", alignItems: "center" }}>
         <S.Icon src={Clock} />
-        <div style={{}}>
+        <div style={{ marginTop: "25px" }}>
           {store?.time.map((time, index) => (
             <div key={index} style={{ width: "300px", height: "30px" }}>
-              <h3>{time}</h3>
+              <div style={{ fontSize: "20px", marginTop: "10px" }}>{time}</div>
             </div>
           ))}
         </div>
@@ -59,10 +63,6 @@ function StoreInfo() {
         <a href={store?.url} style={{ textDecoration: "none", color: "blue" }}>
           {store?.url}
         </a>
-      </div>
-      <div style={{ margin: "0", display: "flex", alignItems: "center" }}>
-        <S.Icon src={Tag} />
-        <h3>{store?.type}</h3>
       </div>
     </S.Table>
   );

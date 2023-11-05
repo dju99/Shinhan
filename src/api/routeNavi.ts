@@ -10,6 +10,11 @@ interface LatLng {
 interface RouteData {
   data: { lng: number; lat: number }[];
   distance: number;
+  time: number;
+  guide: [];
+  taxi: string;
+  toll: string;
+  guideMark: { x: number; y: number };
 }
 
 export async function RouteNavi(props: LatLng): Promise<RouteData> {
@@ -37,7 +42,11 @@ export async function RouteNavi(props: LatLng): Promise<RouteData> {
 
     const roads = response.data.routes[0].sections[0].roads;
     const distance = response.data.routes[0].sections[0].distance;
-
+    const time = response.data.routes[0].sections[0].duration;
+    const guide = response.data.routes[0].sections[0].guides;
+    const toll = response.data.routes[0].summary.fare.toll;
+    const taxi = response.data.routes[0].summary.fare.taxi;
+    const guideMark = response.data.routes[0].sections[0].guides[0];
     const allVertexes = [].concat(...roads.map((location: { vertexes: any }) => location.vertexes));
     const oddVertexes: number[] = allVertexes.filter((_, index) => index % 2 === 0);
     const evenVertexes: number[] = allVertexes.filter((_, index) => index % 2 === 1);
@@ -50,7 +59,7 @@ export async function RouteNavi(props: LatLng): Promise<RouteData> {
       });
     }
 
-    return { data: latLngs, distance };
+    return { data: latLngs, distance, time, guide, taxi, toll, guideMark };
   } catch (error) {
     console.error("오류:", error);
     return Promise.reject(error);

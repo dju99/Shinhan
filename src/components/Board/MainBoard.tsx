@@ -3,6 +3,7 @@ import * as M from "../../assets/css/Board/MainBoard";
 import Pagination from "react-js-pagination";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import loading from "../../assets/img/loading.gif";
 import WriteBtn from "../Button/WriteBtn";
 
 interface MainBoardProps {
@@ -57,8 +58,12 @@ function MainBoard(props: MainBoardProps) {
   return (
     <M.Board>
       <M.BoardHeader>
-        <M.SelectBoard onClick={() => toBoard(props.url.first)}>{props.boardTitle.first}</M.SelectBoard>
-        <M.SelectBoard onClick={() => toBoard(props.url.second)}>{props.boardTitle.second}</M.SelectBoard>
+        <M.SelectBoard props={props.boardTitle.first} onClick={() => toBoard(props.url.first)}>
+          {props.boardTitle.first}
+        </M.SelectBoard>
+        <M.SelectBoard props={props.boardTitle.second} onClick={() => toBoard(props.url.second)}>
+          {props.boardTitle.second}
+        </M.SelectBoard>
       </M.BoardHeader>
       <M.Table>
         <M.PostNum></M.PostNum>
@@ -67,10 +72,8 @@ function MainBoard(props: MainBoardProps) {
         <M.User style={{ fontWeight: "600" }}>작성자</M.User>
         <M.Likes style={{ fontWeight: "600" }}>조회</M.Likes>
       </M.Table>
-      {posts.slice(items * (page - 1), items * (page - 1) + items).map(
-        (
-          post // 처음 5개의 항목만 표시
-        ) => (
+      {posts.length > 0 ? (
+        posts.slice(items * (page - 1), items * page).map((post) => (
           <M.Content key={post._id}>
             <M.PostNum>{post.postNum}</M.PostNum>
             <M.PostTitle onClick={() => navigate(`/post/${board}/${post.postNum}`)}>{post.title}</M.PostTitle>
@@ -78,8 +81,13 @@ function MainBoard(props: MainBoardProps) {
             <M.User>{post.user}</M.User>
             <M.Likes>{post.like}</M.Likes>
           </M.Content>
-        )
+        ))
+      ) : (
+        <div style={{ textAlign: "center", width: "80%", margin: "0 auto", height: "400px" }}>
+          <img style={{ top: "50%", transform: "translateY(-50%)", width: "15%", height: "15%", position: "relative" }} src={loading} />
+        </div>
       )}
+
       <M.PaginationBox>
         <Pagination totalItemsCount={PageNum} activePage={page} onChange={handlePageChange} itemsCountPerPage={items} />
       </M.PaginationBox>

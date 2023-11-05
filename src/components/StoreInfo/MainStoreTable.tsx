@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import * as M from "../../assets/css/StoreInfo/MainStoreTable";
 import axios from "axios";
+import loading from "../../assets/img/loading.gif";
 import { useNavigate } from "react-router-dom";
 
 interface Store {
@@ -40,7 +41,9 @@ function StoreInfo() {
             </M.StoreItem>
           ))
         ) : (
-          <div>No data available</div>
+          <div style={{ height: "360px" }}>
+            <img style={{ top: "50%", transform: "translateY(-50%)", width: "30%", height: "30%", position: "relative" }} src={loading} />
+          </div>
         )}
       </M.StoreinfoContent>
     </M.Storeinfo>

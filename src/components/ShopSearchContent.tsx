@@ -8,6 +8,10 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { RouteNavi } from "../api/routeNavi";
 import axios from "axios";
+import cancel from "../assets/img/cancel.png";
+import detail from "../assets/img/Details.png";
+import start from "../assets/img/start.png";
+import locmark from "../assets/img/LocaionMark.png";
 import { toAddress } from "../api/toAddress";
 
 const UserLocationMarker = styled.div`
@@ -61,6 +65,23 @@ interface infoWindow {
     lng: number;
   };
   type: string[];
+  address: string;
+}
+
+interface PolyGuide {
+  name: string;
+  x: number;
+  y: number;
+  distance: number;
+  duration: number;
+  type: string;
+  guidance: string;
+  road_index: number;
+}
+
+interface PolyGuideMark {
+  x: number;
+  y: number;
 }
 
 function ShopSearchContent() {
@@ -73,6 +94,7 @@ function ShopSearchContent() {
   const [userLocation, setUserLocation] = useState<LocationData>({ latitude: 33.566657, longitude: 126.978359 }); // 현재 위치 & 초기 좌표: 서울시청
   const [userAddress, serUserAddress] = useState("");
   const [polylinePath, setPolylinePath] = useState<PolyLine[] | PolyLine[][] | null>(null); // 경로 표시
+  const [semark, setSeMark] = useState(false);
   const [selectedMarker, setSelectedMarker] = useState<infoWindow | null>(null);
 
   const [array, setArray] = useState<string[]>([]); // 자동완성 DB
@@ -80,6 +102,13 @@ function ShopSearchContent() {
   const [inputValue2, setInputVlaue2] = useState("");
   const [isHaveInput, setIsHaveInput] = useState(false);
   const [dropDownList, setDropDownList] = useState<string[]>([]);
+
+  const [polytaxi, setPolyTaxi] = useState("");
+  const [polytoll, setPolyToll] = useState("");
+  const [polyDistance, setPolyDistance] = useState(0);
+  const [polyTime, setPolyTime] = useState(0);
+  const [polyGuide, setPolyGuide] = useState<PolyGuide[]>([]);
+  const [polyGuideMark, setPolyGuideMark] = useState<PolyGuideMark>();
 
   useEffect(() => {
     // 현재 위치
@@ -97,7 +126,7 @@ function ShopSearchContent() {
         console.error("Error getting user location:", error);
       });
     axios
-      .get("/store")
+      .get("http://localhost:8080/store")
       .then((response) => {
         setStoreData(response.data);
         setArray(response.data.map((store: { name: string }) => store.name));
@@ -156,7 +185,12 @@ function ShopSearchContent() {
     })
       .then((data) => {
         setPolylinePath(data.data); // 라인 경로를 설정합니다.
-        console.log(data.distance); // 거리를 출력합니다.
+        setPolyDistance(data.distance);
+        setPolyTime(data.time);
+        setPolyGuide(data.guide);
+        setPolyTaxi(data.taxi);
+        setPolyToll(data.toll);
+        setPolyGuideMark(data.guideMark);
       })
       .catch((error: { response: { data: any } }) => {
         console.error("RouteNavi 오류:", error);
@@ -169,6 +203,7 @@ function ShopSearchContent() {
 
   // 마커 클릭
   const onMarkerClick = (props: Store) => {
+    setSeMark(true);
     setSelectedMarker({
       name: props.name,
       latlng: {
@@ -176,6 +211,7 @@ function ShopSearchContent() {
         lng: parseFloat(props.latlng.longitude),
       },
       type: props.type,
+      address: props.address,
     });
     setSearchStoreData([props]);
   };
@@ -192,6 +228,7 @@ function ShopSearchContent() {
         lng: parseFloat(props.latlng.longitude),
       },
       type: props.type,
+      address: props.address,
     });
     setMapLevel(3);
   };
@@ -199,12 +236,12 @@ function ShopSearchContent() {
   const onMapClick = () => {
     setSelectedMarker(null);
     setIsHaveInput(false);
+    setPolylinePath(null);
   };
 
   const onMapDragEnd = (map: { getCenter: () => any }) => {
     const newCenter = map.getCenter();
     setLocation({ latitude: newCenter.getLat(), longitude: newCenter.getLng() });
-    setSelectedMarker(null);
     setIsHaveInput(false);
   };
 
@@ -283,9 +320,11 @@ function ShopSearchContent() {
         </M.SearchTypeBox>
         <M.Info>
           <M.InfoLabel>{userAddress}</M.InfoLabel>
-          <M.InfoBtn onClick={toUserLocation}>현위치 바로가기</M.InfoBtn>
+          <div style={{ display: "flex" }}>
+            <M.InfoBtn onClick={toUserLocation}>현위치</M.InfoBtn>
+          </div>
           {inputValue2 && (
-            <div style={{ display: "flex", margin: "20px 0px 0px 20px", alignItems: "center" }}>
+            <div style={{ display: "flex", margin: "25px 0px 0px 20px", alignItems: "center" }}>
               <M.InfoResult>{inputValue2} </M.InfoResult>
               <div>&nbsp;검색결과&nbsp;</div>
               <div style={{ fontWeight: "bold" }}>{searchStoreData.length}</div>
@@ -304,11 +343,75 @@ function ShopSearchContent() {
                     {store.url}
                   </a>
                 </M.ContentLink>
-                <M.ContentBtn onClick={() => toRoute(store.latlng.latitude, store.latlng.longitude)}>길찾기</M.ContentBtn>
               </M.ContentTable>
             ))}
         </M.Content>
       </M.Menu>
+      {polylinePath && (
+        <M.Road style={{ display: "block" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              padding: "20px",
+              borderBottom: "1px solid silver",
+              boxShadow: "0 2px 2px rgba(128, 128, 128, 0.1)",
+            }}
+          >
+            <M.RoadTitle style={{ marginRight: "auto" }}>경로 검색 결과</M.RoadTitle>
+            <div onClick={() => setPolylinePath(null)} style={{ cursor: "pointer" }}>
+              <img src={cancel} style={{ width: "15px", height: "15px" }} />
+            </div>
+          </div>
+          <div style={{ borderBottom: "1px solid silver", padding: "40px 20px 40px 20px", display: "flex" }}>
+            <div style={{ width: "100%", border: "1px solid silver", borderRadius: "5px", boxShadow: "0 2px 4px rgba(128, 128, 128, 0.3)" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  borderBottom: "1px solid silver",
+                  transition: "background 0.3s",
+                }}
+              >
+                <img src={start} style={{ width: "15px", height: "15px", paddingLeft: "10px" }} />
+                <div style={{ padding: "10px" }}>{userAddress}</div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <img src={locmark} style={{ width: "20px", height: "20px", paddingLeft: "7px" }} />
+                <div style={{ padding: "10px", paddingLeft: "8px" }}>{selectedMarker?.name}</div>
+              </div>
+            </div>
+          </div>
+          <div style={{ borderBottom: "1px solid silver", paddingBottom: "20px", boxShadow: "0 2px 4px rgba(128, 128, 128, 0.1)" }}>
+            <div style={{ display: "flex", alignItems: "center", margin: "20px" }}>
+              <M.RoadTime>{formatTime(polyTime)}</M.RoadTime>
+              <M.RoadDistance>{polyDistance >= 1000 ? `${(polyDistance / 1000).toFixed(1)}km` : `${polyDistance}m`}</M.RoadDistance>
+            </div>
+            <div style={{ display: "flex", fontSize: "13px" }}>
+              <div style={{ margin: "0 0px 0 20px", paddingRight: "20px", borderRight: "1px solid silver" }}>통행료 약 {polytoll.toLocaleString()}원</div>
+              <div style={{ margin: "0 20px 0 20px" }}>택시비 약 {polytaxi.toLocaleString()}원</div>
+            </div>
+          </div>
+          <div style={{ height: "calc(100% - 370px)", overflow: "scroll" }}>
+            <div style={{ display: "flex", alignItems: "center", padding: "10px" }}>
+              <img src={start} style={{ width: "15px", height: "15px", marginRight: "10px" }} />
+              <div>{userAddress}</div>
+            </div>
+            {polyGuide
+              .filter((step) => step.name !== "출발지" && step.name !== "목적지" && step.name !== "")
+              .map((step, index) => (
+                <M.RoadPoly key={index} style={{ display: "flex", alignItems: "center", cursor: "pointer" }}>
+                  <div style={{ marginLeft: "10px", padding: "10px" }}>{index + 1}</div>
+                  <div>{step.name}</div>
+                </M.RoadPoly>
+              ))}
+            <div style={{ display: "flex", alignItems: "center", padding: "10px" }}>
+              <img src={locmark} style={{ width: "19px", height: "17px", marginRight: "7px" }} />
+              <div>{selectedMarker?.name}</div>
+            </div>
+          </div>
+        </M.Road>
+      )}
       <M.Map>
         <Map
           onWheel={onMapWheel}
@@ -332,16 +435,31 @@ function ShopSearchContent() {
                     position={{ lat: parseFloat(store.latlng.latitude), lng: parseFloat(store.latlng.longitude) }}
                   />
                 )}
+                {semark && selectedMarker?.latlng && (
+                  <MapInfoWindow position={{ lat: selectedMarker.latlng.lat, lng: selectedMarker.latlng.lng }}>
+                    <M.InfoWindow>
+                      <M.InfoWindowHeader>
+                        <M.InfoTitle onClick={() => navigate(`/store/${selectedMarker.name}`)}>{selectedMarker.name}</M.InfoTitle>
+                        <M.InfoDetailBtn onClick={() => navigate(`/store/${selectedMarker.name}`)}>
+                          <img style={{ width: "25px", marginTop: "3px", cursor: "pointer" }} src={detail} alt="X" />
+                        </M.InfoDetailBtn>
+                        <M.InfoCancelBtn
+                          onClick={() => {
+                            setSeMark(false);
+                          }}
+                        >
+                          <img style={{ width: "15px", marginTop: "3px", cursor: "pointer" }} src={cancel} alt="X" />
+                        </M.InfoCancelBtn>
+                      </M.InfoWindowHeader>
+                      <div style={{ marginBottom: "20px", padding: "10px 0 10px 0", borderBottom: "1px solid silver" }}>{selectedMarker.address}</div>
+                      <div style={{ fontSize: "25px" }}>{selectedMarker.type.join(", ")}</div>
+                      <M.ContentBtn onClick={() => toRoute(selectedMarker.latlng.lat.toString(), selectedMarker.latlng.lng.toString())}>길찾기</M.ContentBtn>
+                    </M.InfoWindow>
+                  </MapInfoWindow>
+                )}
               </div>
             ))}
           </MarkerClusterer>
-          {selectedMarker && selectedMarker.latlng && (
-            <MapInfoWindow position={{ lat: selectedMarker.latlng.lat, lng: selectedMarker.latlng.lng }}>
-              <div onClick={() => navigate(`/store/${selectedMarker.name}`)} style={{ cursor: "pointer", display: "flex" }}>
-                <div>{selectedMarker.name}</div>
-              </div>
-            </MapInfoWindow>
-          )}
           {polylinePath && <Polyline path={polylinePath} strokeColor="red" strokeOpacity={0.7} strokeWeight={5} />}
         </Map>
       </M.Map>
@@ -350,3 +468,18 @@ function ShopSearchContent() {
 }
 
 export default ShopSearchContent;
+
+function formatTime(seconds: number) {
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+
+  const formattedTime = [];
+  if (hours > 0) {
+    formattedTime.push(`${hours}시간`);
+  }
+  if (minutes > 0) {
+    formattedTime.push(`${minutes}분`);
+  }
+
+  return formattedTime.join(" ");
+}

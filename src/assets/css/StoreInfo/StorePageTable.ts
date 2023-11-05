@@ -39,5 +39,5 @@ export const StoreAddress = styled.div`
   margin: 20px 0 20px 0;
   font-size: 20px;
   padding-bottom: 20px;
-  border-bottom: 1px solid silver;
+  border-bottom: 1px solid rgba(128, 128, 128, 0.3);
 `;

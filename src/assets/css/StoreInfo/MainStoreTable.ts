@@ -40,6 +40,7 @@ export const StoreinfoAddress = styled.div`
 
 export const StoreinfoContent = styled.div`
   display: flex;
+  height: 100%;
   flex-direction: column;
   justify-content: space-between;
 `;

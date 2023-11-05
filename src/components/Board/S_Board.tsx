@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import * as S from "../../assets/css/Board/S_Board";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import loading from "../../assets/img/loading.gif";
 
 interface S_BoardProps {
   url: string;
@@ -69,12 +70,18 @@ function S_Board(props: S_BoardProps) {
         <S.BoardTitle>{props.title}</S.BoardTitle>
         <S.BoardLink>더보기+</S.BoardLink>
       </S.Header>
-      {boardData.map((index) => (
-        <div key={index._id} style={{ width: "600px", display: "flex", justifyContent: "space-between", padding: "7px" }}>
-          <S.PostBoard>{getBoardName(index.board)}</S.PostBoard>
-          <S.PostTitle onClick={() => navigate(`/post/${index.board}/${index.postNum}`)}>{index.title}</S.PostTitle>
+      {boardData.length > 0 ? (
+        boardData.map((index) => (
+          <div key={index._id} style={{ width: "600px", display: "flex", justifyContent: "space-between", padding: "7px" }}>
+            <S.PostBoard>{getBoardName(index.board)}</S.PostBoard>
+            <S.PostTitle onClick={() => navigate(`/post/${index.board}/${index.postNum}`)}>{index.title}</S.PostTitle>
+          </div>
+        ))
+      ) : (
+        <div style={{ height: "80%", textAlign: "center" }}>
+          <img style={{ top: "50%", transform: "translateY(-50%)", width: "30%", height: "30%", position: "relative" }} src={loading} />
         </div>
-      ))}
+      )}
     </S.Board>
   );
 }

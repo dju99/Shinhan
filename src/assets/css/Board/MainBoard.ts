@@ -14,8 +14,9 @@ export const BoardHeader = styled.div`
   display: flex;
 `;
 
-export const SelectBoard = styled.div`
+export const SelectBoard = styled.div<{ props: any }>`
   font-size: 25px;
+  font-weight: ${({ props }) => (props ? "bold" : "normal")};
   margin: 30px 20px 0px;
   cursor: pointer;
   position: relative;
@@ -28,7 +29,7 @@ export const SelectBoard = styled.div`
     background-color: #bb86fc;
     left: 0;
     bottom: 0;
-    transition: width 0.3s; /* 애니메이션 효과를 추가합니다. */
+    transition: width 0.3s;
   }
 
   &:hover::before {
