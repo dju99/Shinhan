@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Collection, Db, MongoClient } from "mongodb";
+import { Db, MongoClient } from "mongodb";
 import { connect } from "./connect";
 import { jwtSign, jwtVerify } from "./jwt";
 
@@ -17,7 +17,9 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "./build")));
 
 app.listen(process.env.PORT || 8080, async function () {
-  const client = await MongoClient.connect("mongodb+srv://dju99:yihwang70@cluster0.ljm5i.mongodb.net/");
+  const client = await MongoClient.connect(
+    "mongodb+srv://dju99:yihwang70@cluster0.ljm5i.mongodb.net/"
+  );
   const dbName = "Project";
   db = client.db(dbName);
 
@@ -75,7 +77,10 @@ app.get("/store/search/:type", async function (req: Request, res: Response) {
 
     if (db) {
       // MongoDB에서 해당 상점을 찾아 응답
-      const store = await db.collection("store").find({ type: storeType }).toArray();
+      const store = await db
+        .collection("store")
+        .find({ type: storeType })
+        .toArray();
       if (store) {
         res.json(store);
       } else {
@@ -117,7 +122,13 @@ app.post("/userSignup", async (req: Request, res: Response) => {
         const userCollection = db.collection("user");
 
         // 회원 정보 저장
-        const newUser = { id: id, password: pw, name: name, profile: "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png" };
+        const newUser = {
+          id: id,
+          password: pw,
+          name: name,
+          profile:
+            "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png",
+        };
         await userCollection.insertOne(newUser);
 
         res.send(true);
@@ -206,7 +217,9 @@ app.post("/postupload", async (req: Request, res: Response) => {
     const { title, board, user, content } = req.body;
 
     const writer = await jwtVerify(user);
-    const userNameObject = await db.collection("user").findOne({ id: writer }, { projection: { _id: 0, name: 1 } });
+    const userNameObject = await db
+      .collection("user")
+      .findOne({ id: writer }, { projection: { _id: 0, name: 1 } });
     const userName = userNameObject ? userNameObject.name : "Unknown";
 
     await connect(async (db) => {
@@ -257,36 +270,47 @@ app.get("/post/:board/:postNum", async function (req: Request, res: Response) {
   }
 });
 
-app.delete("/post/:board/:postNum", async function (req: Request, res: Response) {
-  try {
-    const postNum = Number(req.params.postNum); // 요청에서 postNum을 숫자로 변환
-    const board = req.params.board;
+app.delete(
+  "/post/:board/:postNum",
+  async function (req: Request, res: Response) {
+    try {
+      const postNum = Number(req.params.postNum); // 요청에서 postNum을 숫자로 변환
+      const board = req.params.board;
 
-    if (db) {
-      // MongoDB에서 해당 게시물을 삭제
-      await db.collection(board).deleteOne({ postNum: postNum });
+      if (db) {
+        // MongoDB에서 해당 게시물을 삭제
+        await db.collection(board).deleteOne({ postNum: postNum });
 
-      // postNum보다 큰 postNum 값을 가진 게시물들의 postNum을 1씩 감소
-      await db.collection(board).updateMany({ postNum: { $gt: postNum } }, { $inc: { postNum: -1 } });
+        // postNum보다 큰 postNum 값을 가진 게시물들의 postNum을 1씩 감소
+        await db
+          .collection(board)
+          .updateMany({ postNum: { $gt: postNum } }, { $inc: { postNum: -1 } });
 
-      res.status(204).end(); // No Content 응답
-    } else {
-      console.error("MongoDB connection is not established.");
+        res.status(204).end(); // No Content 응답
+      } else {
+        console.error("MongoDB connection is not established.");
+        res.status(500).json({ error: "Internal Server Error" });
+      }
+    } catch (error) {
+      console.error("Error querying MongoDB:", error);
       res.status(500).json({ error: "Internal Server Error" });
     }
-  } catch (error) {
-    console.error("Error querying MongoDB:", error);
-    res.status(500).json({ error: "Internal Server Error" });
   }
-});
+);
 
 app.post("/mypage", async (req: Request, res: Response) => {
   try {
     const { token } = req.body; // JSON 데이터 파싱
     const userID = await jwtVerify(token);
     const userdata = await db.collection("user").findOne({ id: userID });
-    const userBuyPostdata = await db.collection("buy").find({ user: userID }).toArray();
-    const userSellPostdata = await db.collection("sell").find({ user: userID }).toArray();
+    const userBuyPostdata = await db
+      .collection("buy")
+      .find({ user: userID })
+      .toArray();
+    const userSellPostdata = await db
+      .collection("sell")
+      .find({ user: userID })
+      .toArray();
 
     res.json({ userdata, userBuyPostdata, userSellPostdata }); // 사용자 ID를 JSON 형식으로 응답
   } catch (error) {
