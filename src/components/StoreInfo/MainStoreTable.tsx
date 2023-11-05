@@ -16,7 +16,7 @@ function StoreInfo() {
   useEffect(() => {
     // 서버에서 데이터를 가져오는 요청
     axios
-      .get("http://localhost:8080/store")
+      .get("/store")
       .then((response) => {
         setData(response.data); // 데이터를 React 상태(State)에 저장
       })
