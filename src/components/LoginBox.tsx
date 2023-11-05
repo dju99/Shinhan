@@ -113,7 +113,7 @@ function LoginBox() {
 
   const onSubmit = async (userData: AccountProps) => {
     try {
-      const response = await fetch("http://localhost:8080/userLogin", {
+      const response = await fetch("/userLogin", {
         method: "POST",
         body: JSON.stringify({
           id: userData.id,

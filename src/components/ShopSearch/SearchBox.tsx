@@ -27,7 +27,7 @@ const AutoComplete = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8080/store")
+      .get("/store")
       .then((response) => {
         setStoreData(response.data);
 

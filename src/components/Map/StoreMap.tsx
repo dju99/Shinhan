@@ -89,7 +89,7 @@ function StoreMap() {
         console.error("Error getting user location:", error);
       });
     axios
-      .get(`http://localhost:8080/store/${name}`)
+      .get(`/store/${name}`)
       .then((response) => {
         setCenter({ latitude: response.data.latlng.latitude, longitude: response.data.latlng.longitude });
         setStoreLocation({ latitude: response.data.latlng.latitude, longitude: response.data.latlng.longitude });

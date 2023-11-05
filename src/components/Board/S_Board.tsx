@@ -28,7 +28,7 @@ function S_Board(props: S_BoardProps) {
 
   useEffect(() => {
     axios
-      .get(`http://localhost:8080/main/${props.board.first}/${props.board.second}`)
+      .get(`/main/${props.board.first}/${props.board.second}`)
       .then((response) => {
         // 병합할 배열에 대한 명시적인 형식을 지정
         const combinedPosts: Post[] = [...response.data.firstPost, ...response.data.secondPost].reverse();

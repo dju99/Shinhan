@@ -93,7 +93,7 @@ function PostWriteBox() {
 
   const onSubmit = async (postData: PostProps) => {
     try {
-      await fetch("http://localhost:8080/postupload", {
+      await fetch("/postupload", {
         method: "POST",
         body: JSON.stringify({
           title: postData.title,

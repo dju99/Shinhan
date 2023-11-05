@@ -94,7 +94,7 @@ function PostBox() {
 
     // 초기 데이터를 불러오기 위해 useEffect를 사용
     axios
-      .get(`http://localhost:8080/post/${board}/${postNum}`)
+      .get(`/post/${board}/${postNum}`)
       .then((response) => {
         setPosts(response.data);
       })
@@ -110,7 +110,7 @@ function PostBox() {
     if (posts?.postNum) {
       // 다음 글 불러오기
       axios
-        .get(`http://localhost:8000/post/${board}/${posts.postNum + 1}`)
+        .get(`/post/${board}/${posts.postNum + 1}`)
         .then((response) => {
           setPosts(response.data);
         })
@@ -123,7 +123,7 @@ function PostBox() {
   const onPrevPost = () => {
     if (posts?.postNum) {
       axios
-        .get(`http://localhost:8000/post/${board}/${posts.postNum - 1}`)
+        .get(`/post/${board}/${posts.postNum - 1}`)
         .then((response) => {
           setPosts(response.data);
         })
@@ -136,7 +136,7 @@ function PostBox() {
   const onDeletePost = () => {
     if (posts?.postNum) {
       axios
-        .delete(`http://localhost:8000/post/${board}/${postNum}`)
+        .delete(`/post/${board}/${postNum}`)
         .then((response) => {
           alert("삭제 완료");
           navigate(-1);

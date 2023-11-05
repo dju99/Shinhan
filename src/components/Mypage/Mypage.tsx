@@ -149,8 +149,8 @@ function MySite() {
         },
       };
 
-      const response = await axios.post("http://localhost:8080/profileupload", formData, config);
-      const updatedImageUrl = `http://localhost:8080/${response.data.imageUrl.replace(/\\/g, "/")}`;
+      const response = await axios.post("/profileupload", formData, config);
+      const updatedImageUrl = `/${response.data.imageUrl.replace(/\\/g, "/")}`;
       console.log(updatedImageUrl);
       setImage(updatedImageUrl);
     } catch (error) {

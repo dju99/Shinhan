@@ -73,7 +73,7 @@ const Mainmap = () => {
         console.error("Error getting user location:", error);
       });
     axios
-      .get("http://localhost:8080/store")
+      .get("/store")
       .then((response) => {
         setMarkStoreData(response.data);
       })
