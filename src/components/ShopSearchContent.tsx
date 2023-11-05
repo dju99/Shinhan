@@ -126,7 +126,7 @@ function ShopSearchContent() {
         console.error("Error getting user location:", error);
       });
     axios
-      .get("http://localhost:8080/store")
+      .get("/store")
       .then((response) => {
         setStoreData(response.data);
         setArray(response.data.map((store: { name: string }) => store.name));
